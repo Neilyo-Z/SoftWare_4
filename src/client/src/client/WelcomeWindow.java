@@ -44,6 +44,7 @@ public class WelcomeWindow extends JFrame {
 				}
 			}
 		});
+		
 	}
 
 	/**
