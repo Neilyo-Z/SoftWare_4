@@ -5,4 +5,4 @@
  * @author Neilyo
  *
  */
-package sever;
+package server;
