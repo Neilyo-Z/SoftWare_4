@@ -14,10 +14,11 @@ public class user_on_mysql  {
 	static Statement statement;
 	static String status_off="offline";
 	static String status_on="online";
+	
 	//初始化与数据库的连接
 	//初始化表user_db
 	//user_db: user_id, password, nickname, sex, e_mail, status
-	public static void init() throws ClassNotFoundException{
+	public static void init_user_db() throws ClassNotFoundException{
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			con = DriverManager.getConnection(url,"root","38203136");
@@ -48,7 +49,7 @@ public class user_on_mysql  {
 			//检查user_id是否重复
 			String query =
 					"select * from user_db where "
-					+ "user_id='" + user_id
+					+ "user_id = '" + user_id
 					+ "';";
 			ResultSet rs =
 					statement.executeQuery(query);
@@ -74,9 +75,9 @@ public class user_on_mysql  {
 			//选出处于离线状态的符合用户名密码的用户
 			String query =
 					"select * from user_db where "
-					+ "user_id='" + user_id 
-					+ "' and password='" + password
-					+ "' and status='" + status_off 
+					+ "user_id = '" + user_id 
+					+ "' and password = '" + password
+					+ "' and status = '" + status_off 
 					+ "';";
 			ResultSet rs = statement.executeQuery(query);
 			//若不存在符合条件的用户则登录失败
@@ -176,7 +177,7 @@ public class user_on_mysql  {
 						rs.getString("nickname") + Separater +
 						rs.getString("sex") + Separater +
 						rs.getString("e_mail") + Separater +
-						rs.getString("status") + Separater;
+						rs.getString("status");
 				return UserInfo;
 			}
 		}
