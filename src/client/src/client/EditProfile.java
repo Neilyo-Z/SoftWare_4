@@ -23,7 +23,7 @@ import javax.swing.UIManager;
 import javax.swing.ButtonGroup;
 
 public class EditProfile extends JDialog {
-
+	public String id;
 	//定义个人资料内容
 	private String nickName;
 	private String mailBox;
@@ -36,11 +36,33 @@ public class EditProfile extends JDialog {
 		
 		socketRecvFlag = 1;
 		nickName = "容嬷嬷";
-		mailBox = "rongmeme@gmail.com";
+		mailBox = "";
 		sex = "female";
 		
 		if(socketRecvFlag < 0) 
 			throw new Exception ("无法建立连接！");
+	}
+	private void SendProfile(char[] pw) throws Exception {
+		
+		//个人资料发送是否成功的标志
+		int socketSendFlag;
+		//用户名和密码是否正确的标志
+		boolean pwIsRight;
+		
+		pwIsRight = true;
+		socketSendFlag = 1;
+		System.out.println("发送用户资料：");
+		System.out.println(nickName);
+		System.out.println(mailBox);
+		System.out.println(sex);
+		System.out.println("id:"+id);
+		System.out.println("pw: ");
+		System.out.println(pw);
+		
+		if( socketSendFlag < 0)
+			throw new Exception ("无法建立连接！");
+		if( pwIsRight == false )
+			throw new Exception ("用户名或密码不正确！");
 	}
 	
 	private final JPanel contentPanel = new JPanel();
@@ -56,7 +78,7 @@ public class EditProfile extends JDialog {
 			EditProfile dialog = new EditProfile();
 			dialog.GetProfile();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
+			dialog.setVisible(true);			
 		} catch (Exception e) {
 			//报告无法获取个人资料的错误  一般是由于socket无法recv
 			if( e.getMessage() == "无法建立连接！"){
@@ -123,17 +145,25 @@ public class EditProfile extends JDialog {
 		group.add(rdbtnNewRadioButton);
 		group.add(rdbtnNewRadioButton_1);
 		
+		if(sex == "male")
+			rdbtnNewRadioButton.setSelected(true);
+		else if (sex == "female")
+			rdbtnNewRadioButton_1.setSelected(true);
+		
 		textField_nickname = new JTextField();
 		textField_nickname.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		textField_nickname.setBounds(112, 51, 226, 21);
 		contentPanel.add(textField_nickname);
 		textField_nickname.setColumns(10);
+		textField_nickname.setText(nickName);
 		
 		textField_mailbox = new JTextField();
 		textField_mailbox.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		textField_mailbox.setBounds(112, 165, 226, 21);
 		contentPanel.add(textField_mailbox);
 		textField_mailbox.setColumns(10);
+		textField_mailbox.setText(mailBox);
+		
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -154,6 +184,30 @@ public class EditProfile extends JDialog {
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
+				okButton.addActionListener(
+						new ActionListener(){
+							public void actionPerformed(ActionEvent event_ok) {
+								//检查密码是否为空
+								if(passwordField.getPassword().length < 1){
+		                    		UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+		                    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+		                    		JOptionPane.showMessageDialog(null, "密码不能为空", "你tm在逗我？", JOptionPane.ERROR_MESSAGE);
+		                    	}
+								else{
+									//尝试发送用户资料
+									try{
+										SendProfile(passwordField.getPassword());
+										
+									}
+									catch(Exception event_send){
+										UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+							    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+							    		JOptionPane.showMessageDialog(null, event_send.getMessage(), "上传个人资料失败", JOptionPane.ERROR_MESSAGE);
+									}
+								}
+							}
+						}
+						);
 			}
 			{
 				JButton cancelButton = new JButton("我就看看");

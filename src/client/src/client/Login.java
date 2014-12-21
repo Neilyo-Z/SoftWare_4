@@ -20,7 +20,8 @@ class Login{
 		if( pwIsRight == false )
 			throw new Exception ("用户名或密码不正确！");
 		
-		MainWindow mainWindow = new MainWindow(null);
-		mainWindow.main(null, id);
+		MainWindow mainWindow = new MainWindow();
+		mainWindow.id = id;
+		mainWindow.main(null);
 	}
 }

@@ -19,23 +19,23 @@ import java.awt.Font;
 
 public class MainWindow extends JFrame {
 
+	public String id;
 	private JPanel contentPane;
 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args, String id) {
+	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow frame = new MainWindow(id);
+					MainWindow frame = new MainWindow();
 					frame.setVisible(true);
 					//令窗体在屏幕中间显示
 					frame.setLocationRelativeTo(null);
 					
 					//设置关闭窗口时结束程序
 					frame.setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
-				
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -46,7 +46,7 @@ public class MainWindow extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MainWindow(String id) {
+	public MainWindow() {
 		//固定窗口大小
 		setResizable(false);
 
@@ -73,6 +73,7 @@ public class MainWindow extends JFrame {
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
 						EditProfile edit = new EditProfile();
+						edit.id = id;
 						edit.main(null);
 					}
 				}
