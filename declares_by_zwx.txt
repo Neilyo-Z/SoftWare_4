@@ -4,11 +4,11 @@ String Separater = "##"
 所有的String接口，出错后均返回Separater
 所有的boolean接口，出错后均返回false
 
-user_on_mysql:
-设置了用户数据库提供的借口
-user_on_map:
-设置了地图与评论数据库提供的借口
+现在只有一个数据库software_4_db
+
 tables:
+user_info(user_id,password,nickname,sex,e_mail,status)
+
 Nodes(n_id,n_name,n_x,n_y)
 n_id为auto_increment
 n_x,n_y为归一化的正小数
@@ -24,4 +24,13 @@ c_date为timestamp类型
 like_n表示赞数
 article表示评论正文，应在255字符之内
 
+更新：考虑到点赞必须标志某个用户，可能必须得添加一个table:likes
 
+
+函数约定更新：
+getComments
+返回一个arraylist:
+第一个元素为一个字符串，表示返回的评论信息个数，若没有相应评论则为0
+该数目为min(要求的评论数，边所有的评论数）
+接下来每个元素为一个评论信息，由Separater分割
+默认评论按时间降序排列
