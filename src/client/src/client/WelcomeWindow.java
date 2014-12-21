@@ -113,8 +113,7 @@ public class WelcomeWindow extends JFrame {
                     	}
                     	else{
                     		try {
-                    			Login login = new Login();
-                    			login.main(textField.getText(), passwordField.getPassword());
+                    			Login.main(textField.getText(), passwordField.getPassword());
                     			//登录成功后关闭登录窗口 释放资源
                     			dispose();
                     		}
@@ -151,11 +150,9 @@ public class WelcomeWindow extends JFrame {
                     	}
                     	else{
                     		try{
-	                    		Register register = new Register();
-	                    		register.main(textField.getText(), passwordField.getPassword());
+	                    		Register.main(textField.getText(), passwordField.getPassword());
 	                    		//注册成功后登录 并关闭登录窗口 释放资源
-	                    		Login login = new Login();
-	                			login.main(textField.getText(), passwordField.getPassword());
+	                			Login.main(textField.getText(), passwordField.getPassword());
 	                			dispose();
                     		}
                     		catch(Exception e1) {

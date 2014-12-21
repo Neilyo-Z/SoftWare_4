@@ -1,9 +1,12 @@
 package client;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -13,13 +16,15 @@ import javax.swing.JDialog;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
-import org.eclipse.jface.viewers.deferred.SetModel;
 import java.awt.Font;
 
 public class MainWindow extends JFrame {
 
-	public String id;
+	public static String id;
+	public static String pw;
 	private JPanel contentPane;
 
 	/**
@@ -36,6 +41,23 @@ public class MainWindow extends JFrame {
 					
 					//设置关闭窗口时结束程序
 					frame.setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
+					
+					//创建窗口关闭监听器 在关闭之前自动进行登出操作
+					frame.addWindowListener(new WindowAdapter() {   
+					    public void windowClosing(WindowEvent e) {  
+						    super.windowClosing(e);  
+						    try{
+							    Logout.main(id, pw);
+						    }
+						    catch(Exception event_logout){
+								UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+	                    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+	                    		JOptionPane.showMessageDialog(null, event_logout.getMessage(), "登出失败", JOptionPane.ERROR_MESSAGE);
+						    }
+				     }  
+				      
+				    });   
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -50,7 +72,7 @@ public class MainWindow extends JFrame {
 		//固定窗口大小
 		setResizable(false);
 
-		setTitle(id+"您好，欢迎您使用路径查询");
+		setTitle(id+" 您好，欢迎您使用路径查询");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
@@ -72,16 +94,33 @@ public class MainWindow extends JFrame {
 		mntmNewMenuItem.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
-						EditProfile edit = new EditProfile();
-						edit.id = id;
-						edit.main(null);
+						EditProfile.id = id;
+						EditProfile.pw = pw;
+						EditProfile.main(null);
 					}
 				}
 				);
 		
-		JMenuItem mntmNewMenuItem_2 = new JMenuItem("注销");
+		JMenuItem mntmNewMenuItem_2 = new JMenuItem("切换账号");
 		mntmNewMenuItem_2.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		mnNewMenu.add(mntmNewMenuItem_2);
+		mntmNewMenuItem_2.addActionListener(
+				new ActionListener(){
+					public void actionPerformed(ActionEvent e2) {
+						try{
+							//登出并回到登录界面
+							Logout.main(id, pw);
+							WelcomeWindow.main(null);
+							dispose();	
+						}
+						catch(Exception event_logout){
+							UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                    		JOptionPane.showMessageDialog(null, event_logout.getMessage(), "登出失败", JOptionPane.ERROR_MESSAGE);
+						}
+					}
+				}
+				);
 		
 		JMenuItem mntmNewMenuItem_3 = new JMenuItem("退出");
 		mntmNewMenuItem_3.setFont(new Font("微软雅黑", Font.PLAIN, 12));
@@ -89,7 +128,16 @@ public class MainWindow extends JFrame {
 		mntmNewMenuItem_3.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e3) {
-						System.exit(0);
+						try{
+							//登出并结束程序
+							Logout.main(id, pw);
+							System.exit(0);
+						}
+						catch(Exception event_logout){
+							UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                    		JOptionPane.showMessageDialog(null, event_logout.getMessage(), "登出失败", JOptionPane.ERROR_MESSAGE);
+						}
 					}
 				}
 				);
@@ -101,5 +149,7 @@ public class MainWindow extends JFrame {
 		JMenuItem mntmNewMenuItem_1 = new JMenuItem("关于我们    ");
 		mntmNewMenuItem_1.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		mnNewMenu_1.add(mntmNewMenuItem_1);
+		
+		
 	}
 }
