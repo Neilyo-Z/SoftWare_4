@@ -4,37 +4,36 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Statement;
-import java.util.ArrayList;
 
 public class user_on_mysql  {
 	public static final String Separater = "##" ;
 	static Connection con;
-	static String url="jdbc:mysql://localhost:3306/user_db";
+	static String url="jdbc:mysql://localhost:3306/software_4_db";
 	static String username="root";
 	static Statement statement;
 	static String status_off="offline";
 	static String status_on="online";
 	
 	//初始化与数据库的连接
-	//初始化表user_db
-	//user_db: user_id, password, nickname, sex, e_mail, status
-	public static void init_user_db() throws ClassNotFoundException{
+	//初始化表user_info
+	//user_info: user_id, password, nickname, sex, e_mail, status
+	public static void init_user_info() throws ClassNotFoundException{
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			con = DriverManager.getConnection(url,"root","38203136");
 			statement = con.createStatement();
 			System.out.println("Connection Successful!");
-			//建立tables user_db,status标识是否在线
-			String create_table_user_db = 
+			//建立tables user_info,status标识是否在线
+			String create_table_user_info = 
 					"create table if not exists "
-					+ "user_db ("
+					+ "user_info ("
 					+ "user_id varchar(255) not null primary key,"
 					+ "password varchar(255) not null," 
 					+ "nickname varchar(255)," 
 					+ "sex varchar(255),"
 					+ "e_mail varchar(255)," 
 					+ "status varchar(255) not null );";
-			statement.executeUpdate(create_table_user_db);
+			statement.executeUpdate(create_table_user_info);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -48,7 +47,7 @@ public class user_on_mysql  {
 		synchronized (statement) {
 			//检查user_id是否重复
 			String query =
-					"select * from user_db where "
+					"select * from user_info where "
 					+ "user_id = '" + user_id
 					+ "';";
 			ResultSet rs =
@@ -57,7 +56,7 @@ public class user_on_mysql  {
 			if(!rs.next()) {
 				//插入该用户信息
 				String insert_query =
-						"insert into user_db(user_id,password,status) "
+						"insert into user_info(user_id,password,status) "
 						+ "VALUES ('"
 						+ user_id + "','"
 						+ password + "','" 
@@ -74,7 +73,7 @@ public class user_on_mysql  {
 		synchronized (statement) {
 			//选出处于离线状态的符合用户名密码的用户
 			String query =
-					"select * from user_db where "
+					"select * from user_info where "
 					+ "user_id = '" + user_id 
 					+ "' and password = '" + password
 					+ "' and status = '" + status_off 
@@ -86,7 +85,7 @@ public class user_on_mysql  {
 			else {
 				//更新该用户的status为status_on
 				String update_query =
-						"update user_db set "
+						"update user_info set "
 						+ "status='" + status_on
 						+ "' where user_id='" + user_id
 						+ "' and password='" + password
@@ -101,7 +100,7 @@ public class user_on_mysql  {
 		synchronized (statement) {
 			//选出处于在线状态的符合用户名密码的用户
 			String query =
-					"select * from user_db where "
+					"select * from user_info where "
 					+ "user_id='" + user_id
 					+ "' and password='" + password
 					+ "' and status='" + status_on 
@@ -113,7 +112,7 @@ public class user_on_mysql  {
 			else {
 				//更新该用户的status为status_off
 				String update_query =
-						"update user_db set "
+						"update user_info set "
 						+ "status='" + status_off
 						+ "' where "
 						+ "user_id='" + user_id + "' and "						
@@ -130,7 +129,7 @@ public class user_on_mysql  {
 		synchronized (statement) {
 			//选出合法用户，注：必须在线才允许修改
 			String query =
-					"SELECT * FROM user_db WHERE "
+					"SELECT * FROM user_info WHERE "
 					+ "user_id = '" + user_id
 					+ "' and password = '" + password
 					+ "' and status = '" + status_on
@@ -142,7 +141,7 @@ public class user_on_mysql  {
 			else {
 				//更新该用户个人信息
 				String update_query=
-					"UPDATE user_db SET "
+					"UPDATE user_info SET "
 					+ "password = '" + password 
 					+ "',nickname = '" + nickname
 					+ "',sex = '" + sex
@@ -160,7 +159,7 @@ public class user_on_mysql  {
 		synchronized (statement) {
 			String UserInfo;
 			String query =
-					"SELECT * FROM user_db WHERE " + 
+					"SELECT * FROM user_info WHERE " + 
 					"user_id = '" + user_id +
 					"' AND " +
 					"password = '" + password +
