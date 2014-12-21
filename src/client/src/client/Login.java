@@ -1,8 +1,7 @@
 package client;
 
 class Login{
-	public static void main(String id,char[] pw) 
-	throws Exception{
+	public static void main(String id,char[] pw) throws Exception{
 		System.out.println("登录:");
 		System.out.println(id);
 		System.out.println(pw);
