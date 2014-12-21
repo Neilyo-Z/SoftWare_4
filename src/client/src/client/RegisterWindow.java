@@ -7,18 +7,18 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-public class MainWindow extends JFrame {
+public class RegisterWindow extends JFrame {
 
 	private JPanel contentPane;
 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args, String id) {
+	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow frame = new MainWindow(id);
+					RegisterWindow frame = new RegisterWindow();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -30,8 +30,8 @@ public class MainWindow extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MainWindow(String id) {
-		setTitle(id+"您好，欢迎您使用路径查询");
+	public RegisterWindow() {
+		setTitle("新用户注册");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
