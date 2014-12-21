@@ -32,6 +32,10 @@ public class MainWindow extends JFrame {
 					frame.setVisible(true);
 					//令窗体在屏幕中间显示
 					frame.setLocationRelativeTo(null);
+					
+					//设置关闭窗口时结束程序
+					frame.setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
+				
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

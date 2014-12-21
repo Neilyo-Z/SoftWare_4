@@ -5,7 +5,7 @@ class Login{
 		System.out.println("登录:");
 		System.out.println(id);
 		System.out.println(pw);
-		//将id和pw发送的标志
+		//将id和pw发送是否成功的标志
 		int socketSendFlag;
 		
 		socketSendFlag = 1;
