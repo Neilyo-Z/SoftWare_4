@@ -1,3 +1,9 @@
+约定：
+String Separater = "##"
+所有的INT接口，出错后均返回-1
+所有的String接口，出错后均返回Separater
+所有的boolean接口，出错后均返回false
+
 user_on_mysql:
 设置了用户数据库提供的借口
 user_on_map:
@@ -7,12 +13,15 @@ Nodes(n_id,n_name,n_x,n_y)
 n_id为auto_increment
 n_x,n_y为归一化的正小数
 
-Edges(e_id,n_id_1,n_id_2,distance,tag1,tag2,tag3)
+Edges(e_id,e_name,n_id_1,n_id_2,distance,tag1,tag2,tag3)
 e_id为auto_increment
 n_id_1,n_id_2为连接该边的两个node的n_id
 tag1..均表示数量，该数量应实时更新为Comments中e_id一致的tag数之和
 
-Comments(c_id,e_id,user_id,like_n,jubao_n,article, tag1,tag2,tag3)
+Comments(c_id,c_date,e_id,user_id,like_n,jubao_n,article, tag1,tag2,tag3)
+c_date为timestamp类型
+(只支持到2038年12月31日）
 like_n表示赞数
-article表示评论正文
+article表示评论正文，应在255字符之内
+
 
