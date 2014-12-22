@@ -20,6 +20,9 @@ import java.awt.Font;
 
 import javax.swing.SwingConstants;
 import javax.swing.JPasswordField;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 public class WelcomeWindow extends JFrame {
 
@@ -30,7 +33,6 @@ public class WelcomeWindow extends JFrame {
 	private JLabel lblDoYouNot;
 	private JButton btnNewButton_1;
 	private JLabel lblNewLabel_1;
-	private JLabel lblNewLabel_2;
 	private JPasswordField passwordField;
 
 	/**
@@ -60,13 +62,42 @@ public class WelcomeWindow extends JFrame {
 		//固定窗口大小
 		setResizable(false);
 		
-		setTitle("欢迎使用路径查询系统");
+		setTitle("欢迎使用地图路径查询系统");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
+		
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		JMenu mnNewMenu = new JMenu(" 帮助 ");
+		mnNewMenu.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		menuBar.add(mnNewMenu);
+		
+		JMenuItem mntmNewMenuItem = new JMenuItem(" 关于我们 ");
+		mntmNewMenuItem.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		mnNewMenu.add(mntmNewMenuItem);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+		mntmNewMenuItem.addActionListener(
+				new ActionListener(){
+					public void actionPerformed(ActionEvent event_aboutUs) {
+						UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                		JOptionPane.showMessageDialog(null, 
+                				"\n"
+                				+ "   地图路径查询系统 v1.0"
+                				+ "\n"
+                				+ "\n"
+                				+ "作者：\n"
+                				+ "       朱维希 121220319\n"
+                				+ "       丁文韬 12122xxxx\n"
+                				+ "       李昊轩 121220044\n"
+                				, "关于我们", JOptionPane.INFORMATION_MESSAGE);
+					}
+				}
+				);
 		
 		JPanel panel = new JPanel();
 		TitledBorder panelBorderTitle = 
@@ -167,16 +198,12 @@ public class WelcomeWindow extends JFrame {
 		JPanel panel_1 = new JPanel();
 		panel_1.setBounds(10, 10, 249, 242);
 		contentPane.add(panel_1);
-		panel_1.setLayout(new BorderLayout(0, 0));
+		panel_1.setLayout(null);
 		
-		lblNewLabel_1 = new JLabel("路径查询系统");
+		lblNewLabel_1 = new JLabel("地图路径查询系统");
+		lblNewLabel_1.setBounds(0, 71, 249, 31);
 		lblNewLabel_1.setFont(new Font("微软雅黑", Font.PLAIN, 30));
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_1.add(lblNewLabel_1, BorderLayout.CENTER);
-		
-		lblNewLabel_2 = new JLabel("作者：朱维希 丁文韬 李昊轩");
-		lblNewLabel_2.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_1.add(lblNewLabel_2, BorderLayout.SOUTH);
+		panel_1.add(lblNewLabel_1);
 	}
 }
