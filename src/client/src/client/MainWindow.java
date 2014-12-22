@@ -2,7 +2,11 @@ package client;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -11,15 +15,28 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 
 import java.awt.Font;
+import java.util.Vector;
+
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import javax.swing.SwingConstants;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JScrollBar;
+import javax.swing.border.TitledBorder;
+import javax.swing.JList;
 
 public class MainWindow extends JFrame {
 
@@ -149,6 +166,94 @@ public class MainWindow extends JFrame {
 		JMenuItem mntmNewMenuItem_1 = new JMenuItem(" 关于我们  ");
 		mntmNewMenuItem_1.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		mnNewMenu_1.add(mntmNewMenuItem_1);
+		
+		JPanel panel = new JPanel();
+		panel.setBounds(26, 46, 500, 500);
+		contentPane.add(panel);
+		panel.setLayout(null);
+		
+		JPanel panel_1 = new JPanel();
+		
+		//设置 panelBorderTitle 并修改字体
+		TitledBorder panelBorderTitle = 
+				new TitledBorder(
+						UIManager.getBorder("TitledBorder.border"),
+						"\u7528\u6237\u8BC4\u8BBA", 
+						TitledBorder.LEADING, 
+						TitledBorder.TOP, 
+						null, 
+						new Color(0, 0, 0));
+		panel_1.setBorder(panelBorderTitle);
+		panelBorderTitle.setTitleFont(new Font("微软雅黑", Font.PLAIN, 12));
+		
+		panel_1.setBounds(534, 46, 232, 500);
+		contentPane.add(panel_1);
+		panel_1.setLayout(null);
+		
+		JButton button = new JButton("发表");
+		button.setFont(new Font("微软雅黑", Font.PLAIN, 10));
+		button.setBounds(161, 470, 61, 20);
+		panel_1.add(button);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 388, 212, 75);
+		panel_1.add(scrollPane);
+		
+		JTextArea textArea = new JTextArea();
+		
+		//激活自动换行功能
+		textArea.setLineWrap(true);
+		//激活断行不断字功能
+		textArea.setWrapStyleWord(true);
+		
+		scrollPane.setViewportView(textArea);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(10, 25, 212, 354);
+		panel_1.add(scrollPane_1);
+		
+		//实现ListCellRenderer接口 来达到绘制list中的cell的目的
+		class FontCellRenderer extends JTextArea implements ListCellRenderer
+		{
+			private String text;
+		    private Color background;
+		    private Color foreground;
+		    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus){
+		       text = (String)value;
+		       background = isSelected ? list.getSelectionBackground() : list.getBackground();
+		       foreground = isSelected ? list.getSelectionForeground() : list.getForeground();
+		       setFont(list.getFont());
+		       //激活自动换行功能
+		       setLineWrap(true);
+		       // 加个边框
+		       setBorder(BorderFactory.createLineBorder(Color.lightGray));
+		       setText(text);
+		       //选中效果
+		       if (isSelected) {
+		            setBackground(list.getSelectionBackground());
+		            setForeground(list.getSelectionForeground());
+		        } else {
+		            setBackground(list.getBackground());
+		            setForeground(list.getForeground());
+		        }
+		       return this;
+		    }
+		}
+
+		
+		Vector<String> comment = new Vector<String>();
+		JList<String> list = new JList<String>(comment);
+		list.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		comment.add("远东大道：\r\n这道儿太jb堵了！\n");
+		comment.add("金大路：\r\n前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈！\r\n");
+		comment.add("金大路：\r\n前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！\n");
+		list.setCellRenderer( new FontCellRenderer() );
+		
+		scrollPane_1.setViewportView(list);
+		
+		JPanel panel_2 = new JPanel();
+		panel_2.setBounds(10, 25, 212, 354);
+		panel_1.add(panel_2);
 		mntmNewMenuItem_1.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent event_aboutUs) {

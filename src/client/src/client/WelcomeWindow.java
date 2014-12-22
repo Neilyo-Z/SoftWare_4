@@ -100,16 +100,19 @@ public class WelcomeWindow extends JFrame {
 				);
 		
 		JPanel panel = new JPanel();
+		
+		//设置 panelBorderTitle 并修改字体
 		TitledBorder panelBorderTitle = 
 				new TitledBorder(
 						UIManager.getBorder("TitledBorder.border"),
-						"\u767B\u5F55", 
+						"\u767B\u5F55/\u6CE8\u518C", 
 						TitledBorder.LEADING, 
 						TitledBorder.TOP, 
 						null, 
 						new Color(0, 0, 0));
 		panel.setBorder(panelBorderTitle);
 		panelBorderTitle.setTitleFont(new Font("微软雅黑", Font.PLAIN, 12));
+		
 		panel.setBounds(271, 10, 153, 242);
 		contentPane.add(panel);
 		panel.setLayout(null);

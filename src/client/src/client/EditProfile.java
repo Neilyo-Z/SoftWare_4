@@ -198,7 +198,7 @@ public class EditProfile extends JDialog {
 								//尝试发送用户资料
 								try{
 									SendProfile();
-									
+									dispose();
 								}
 								catch(Exception event_send){
 									UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
