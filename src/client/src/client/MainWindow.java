@@ -223,10 +223,15 @@ public class MainWindow extends JFrame {
 		       background = isSelected ? list.getSelectionBackground() : list.getBackground();
 		       foreground = isSelected ? list.getSelectionForeground() : list.getForeground();
 		       setFont(list.getFont());
-		       //激活自动换行功能
 		       setLineWrap(true);
-		       // 加个边框
+		       //加个边框
 		       setBorder(BorderFactory.createLineBorder(Color.lightGray));
+		       
+		       //解决自动换行文本无法生长的问题 17为一行的汉字个数
+		       int textWrapNumber = ((text.split("\n"))[1].length() / 17);
+		       for(int i=1;i<=textWrapNumber;i++)
+		    	   text = text + "\n";
+		       
 		       setText(text);
 		       //选中效果
 		       if (isSelected) {
@@ -244,16 +249,12 @@ public class MainWindow extends JFrame {
 		Vector<String> comment = new Vector<String>();
 		JList<String> list = new JList<String>(comment);
 		list.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		comment.add("远东大道：\r\n这道儿太jb堵了！\n");
-		comment.add("金大路：\r\n前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈！\r\n");
-		comment.add("金大路：\r\n前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！\n");
+		comment.add("远东大道：\n这！");
+		comment.add("金大路：\n前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈！");
+		comment.add("金大路：\n前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！");
 		list.setCellRenderer( new FontCellRenderer() );
 		
 		scrollPane_1.setViewportView(list);
-		
-		JPanel panel_2 = new JPanel();
-		panel_2.setBounds(10, 25, 212, 354);
-		panel_1.add(panel_2);
 		mntmNewMenuItem_1.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent event_aboutUs) {
