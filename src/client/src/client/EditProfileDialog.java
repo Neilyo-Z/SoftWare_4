@@ -22,7 +22,7 @@ import javax.swing.JRadioButton;
 import javax.swing.UIManager;
 import javax.swing.ButtonGroup;
 
-public class EditProfile extends JDialog {
+public class EditProfileDialog extends JDialog {
 	public static String id;
 	public static String pw;
 	//定义个人资料内容
@@ -74,7 +74,7 @@ public class EditProfile extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			EditProfile dialog = new EditProfile();
+			EditProfileDialog dialog = new EditProfileDialog();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 			
@@ -89,7 +89,7 @@ public class EditProfile extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public EditProfile() {
+	public EditProfileDialog() {
 		
 		try{
 			GetProfile();
@@ -200,10 +200,10 @@ public class EditProfile extends JDialog {
 									SendProfile();
 									dispose();
 								}
-								catch(Exception event_send){
+								catch(Exception sendException){
 									UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
 						    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
-						    		JOptionPane.showMessageDialog(null, event_send.getMessage(), "上传个人资料失败", JOptionPane.ERROR_MESSAGE);
+						    		JOptionPane.showMessageDialog(null, sendException.getMessage(), "上传个人资料失败", JOptionPane.ERROR_MESSAGE);
 								}
 							}
 						}
