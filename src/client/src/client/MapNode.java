@@ -1,7 +1,5 @@
 package client;
 
-import java.util.Vector;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 

@@ -1,6 +1,5 @@
 package client;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -26,6 +25,11 @@ import javax.swing.JMenuItem;
 
 public class WelcomeWindow extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7963886930972219311L;
+	
 	private JPanel contentPane;
 	private JTextField textField;
 	private JLabel lblId;
@@ -185,9 +189,9 @@ public class WelcomeWindow extends JFrame {
                     	else{
                     		try{
                     			User.Register(textField.getText(), passwordField.getPassword());
-	                    		//注册成功后登录 并关闭登录窗口 释放资源
-	                    		User.Login(textField.getText(), passwordField.getPassword());
-	                			dispose();
+                    			UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                        		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                        		JOptionPane.showMessageDialog(null, "您的账号已经注册成功！\n请您登录后完善个人信息", "恭喜您", JOptionPane.INFORMATION_MESSAGE);
                     		}
                     		catch(Exception e1) {
                     			UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
@@ -208,5 +212,15 @@ public class WelcomeWindow extends JFrame {
 		lblNewLabel_1.setFont(new Font("微软雅黑", Font.PLAIN, 30));
 		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_1.add(lblNewLabel_1);
+		
+		try {
+			client.connectToServer();
+		}
+		//对于没发成功的弹窗通知
+		catch (Exception e1) {
+			UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+    		JOptionPane.showMessageDialog(null, e1.getMessage(), "与服务器连接失败", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 }

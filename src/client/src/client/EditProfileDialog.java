@@ -15,14 +15,16 @@ import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.JPasswordField;
-import javax.swing.BoxLayout;
 import javax.swing.JRadioButton;
 import javax.swing.UIManager;
 import javax.swing.ButtonGroup;
 
 public class EditProfileDialog extends JDialog {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3680057744329776369L;
+	
 	public static String id;
 	public static String pw;
 	//定义个人资料内容
@@ -32,37 +34,25 @@ public class EditProfileDialog extends JDialog {
 	
 	//定义获取个人资料的方法
 	private void GetProfile() throws Exception {
-		//个人资料接收是否成功的标志
-		int socketRecvFlag;
+		String str = "getUserInfo##"+id+"##"+pw;
+		String echo = client.sendToServer(str);
+		//处理回答
+	    if( echo.compareTo("false") == 0 ){
+			throw new Exception ("获得资料失败！");
+		}
+	    String[] info = echo.split("##");
+		this.nickName = info[0];
+		this.sex = info[1];
+		this.mailBox = info[2];
 		
-		socketRecvFlag = 1;
-		nickName = "容嬷嬷";
-		mailBox = "rongmeme@huanzhugege.com";
-		sex = "female";
-		
-		if(socketRecvFlag < 0) 
-			throw new Exception ("无法建立连接！");
 	}
 	private void SendProfile() throws Exception {
-		
-		//个人资料发送是否成功的标志
-		int socketSendFlag;
-		//用户名和密码是否正确的标志
-		boolean pwIsRight;
-		
-		pwIsRight = true;
-		socketSendFlag = 1;
-		System.out.println("发送用户资料：");
-		System.out.println(nickName);
-		System.out.println(mailBox);
-		System.out.println(sex);
-		System.out.println("id: "+id);
-		System.out.println("pw: "+pw);
-		
-		if( socketSendFlag < 0)
-			throw new Exception ("无法建立连接！");
-		if( pwIsRight == false )
-			throw new Exception ("用户名或密码不正确！");
+		String str = "edit##"+id+"##"+pw+"##"+nickName+"##"+sex+"##"+mailBox;
+		String echo = client.sendToServer(str);
+		//处理回答
+	    if( echo.compareTo("false") == 0 ){
+			throw new Exception ("修改资料失败！");
+		}
 	}
 	
 	private final JPanel contentPanel = new JPanel();
@@ -149,11 +139,11 @@ public class EditProfileDialog extends JDialog {
 		group.add(rdbtnNewRadioButton);
 		group.add(rdbtnNewRadioButton_1);
 		
-		if(sex == "male"){
+		if(sex.compareTo("male") == 0){
 			rdbtnNewRadioButton.setSelected(true);
 			rdbtnNewRadioButton_1.setSelected(false);
 		}
-		else if (sex == "female"){
+		else if (sex.compareTo("female") == 0){
 			rdbtnNewRadioButton.setSelected(false);
 			rdbtnNewRadioButton_1.setSelected(true);
 		}

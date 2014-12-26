@@ -1,12 +1,8 @@
 package client;
 
-import java.awt.AWTEvent;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -18,7 +14,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.BorderFactory;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
@@ -34,18 +29,20 @@ import java.util.Vector;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.SwingConstants;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JScrollBar;
 import javax.swing.border.TitledBorder;
 import javax.swing.JList;
 import javax.swing.border.LineBorder;
 
-import sun.applet.Main;
 
 public class MainWindow extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1567745599973404674L;
+	
 	public static String uID;
 	public static String pw;
 	private static int commentsIndexIsSelected = -1;
@@ -96,6 +93,7 @@ public class MainWindow extends JFrame {
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings("unchecked")
 	public MainWindow() {
 		//固定窗口大小
 		setResizable(false);
@@ -426,8 +424,14 @@ public class MainWindow extends JFrame {
 		
 	}
 
+	@SuppressWarnings("rawtypes")
 	//实现ListCellRenderer接口 来达到绘制list中的cell的目的
 	class CommentCellRenderer extends JTextArea implements ListCellRenderer{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4376943262573557484L;
+		
 		private String text;
 		private String uid;
 		private boolean isSelected;
@@ -456,7 +460,13 @@ public class MainWindow extends JFrame {
 	    	return isSelected;
 	    }
 	}
+	@SuppressWarnings("rawtypes")
 	class MapCellRenderer extends JTextArea implements ListCellRenderer{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -7192652465702565212L;
+		
 		private String nodeName;
 		private boolean isSelected;
 	    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus){
