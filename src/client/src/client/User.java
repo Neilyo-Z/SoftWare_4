@@ -20,7 +20,7 @@ class User{
 		if( pwIsRight == false )
 			throw new Exception ("用户名或密码不正确！");
 		
-		MainWindow.id = id;
+		MainWindow.uID = id;
 		MainWindow.pw = String.valueOf(pw);
 		MainWindow.main(null);
 	}

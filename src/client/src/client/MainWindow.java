@@ -42,10 +42,15 @@ import javax.swing.border.TitledBorder;
 import javax.swing.JList;
 import javax.swing.border.LineBorder;
 
+import sun.applet.Main;
+
 public class MainWindow extends JFrame {
 
-	public static String id;
+	public static String uID;
 	public static String pw;
+	private static int commentsIndexIsSelected = -1;
+	private static int nodeIDIsSelected = -1;
+	private static boolean hasQueryed = false;
 	private JPanel contentPane;
 	private JTextField textField;
 	private JTextField textField_1;
@@ -70,7 +75,7 @@ public class MainWindow extends JFrame {
 					    public void windowClosing(WindowEvent e) {  
 						    super.windowClosing(e);  
 						    try{
-							    User.Logout(id, pw);
+							    User.Logout(uID, pw);
 						    }
 						    catch(Exception event_logout){
 								UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
@@ -95,7 +100,7 @@ public class MainWindow extends JFrame {
 		//固定窗口大小
 		setResizable(false);
 
-		setTitle(id+" 您好，欢迎您使用地图路径查询");
+		setTitle(uID+" 您好，欢迎您使用地图路径查询");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
@@ -117,7 +122,7 @@ public class MainWindow extends JFrame {
 		mntmNewMenuItem.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
-						EditProfileDialog.id = id;
+						EditProfileDialog.id = uID;
 						EditProfileDialog.pw = pw;
 						EditProfileDialog.main(null);
 					}
@@ -132,7 +137,7 @@ public class MainWindow extends JFrame {
 					public void actionPerformed(ActionEvent e2) {
 						try{
 							//登出并回到登录界面
-							User.Logout(id, pw);
+							User.Logout(uID, pw);
 							WelcomeWindow.main(null);
 							dispose();	
 						}
@@ -153,7 +158,7 @@ public class MainWindow extends JFrame {
 					public void actionPerformed(ActionEvent e3) {
 						try{
 							//登出并结束程序
-							User.Logout(id, pw);
+							User.Logout(uID, pw);
 							System.exit(0);
 						}
 						catch(Exception event_logout){
@@ -206,8 +211,40 @@ public class MainWindow extends JFrame {
 		textArea.setLineWrap(true);
 		//激活断行不断字功能
 		textArea.setWrapStyleWord(true);
-		
 		scrollPane.setViewportView(textArea);
+		
+		//设置“发表”按钮的监听器
+		button.addActionListener(
+				new ActionListener(){  
+                    public void actionPerformed(ActionEvent event_sendComments) {
+                    	String text = textArea.getText();
+                    	if(!hasQueryed){
+                    		UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                    		JOptionPane.showMessageDialog(null, "请先查询", "你tm在逗我？", JOptionPane.ERROR_MESSAGE);
+                    	}
+                    	else if(nodeIDIsSelected < 0){
+                    		UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                    		JOptionPane.showMessageDialog(null, "请在左侧查询结果中选择一条路，对其评论", "你tm在逗我？", JOptionPane.ERROR_MESSAGE);
+                    	}
+                    	else if(text.length() < 1 ){
+                    		UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                    		JOptionPane.showMessageDialog(null, "内容不能为空", "你tm在逗我？", JOptionPane.ERROR_MESSAGE);
+                    	}
+                    	else{
+                    		try{
+                    			Comments.sendComments(nodeIDIsSelected, text);
+                    		}
+                    		catch(Exception sendCommentsException) {
+                    			UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                        		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                        		JOptionPane.showMessageDialog(null, sendCommentsException.getMessage(), "发表评论失败", JOptionPane.ERROR_MESSAGE);
+                    		}
+                    	} 
+                    }  
+                });
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(10, 24, 345, 355);
@@ -216,15 +253,8 @@ public class MainWindow extends JFrame {
 		Vector<Comments> comment = new Vector<Comments>();
 		JList<Comments> list = new JList<Comments>(comment);
 		list.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		//重新绘制list中的cell
 		list.setCellRenderer( new CommentCellRenderer() );
-		try{
-			Comments.getComments(comment);
-		}
-		catch(Exception commentException){
-			UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
-    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
-    		JOptionPane.showMessageDialog(null, commentException.getMessage(), "获取评论失败", JOptionPane.ERROR_MESSAGE);
-		}
 		
 		JPopupMenu commentPopupMenu = new JPopupMenu();
 		list.add(commentPopupMenu);
@@ -240,12 +270,24 @@ public class MainWindow extends JFrame {
 		JMenuItem mntmNewMenuItem_5 = new JMenuItem(" 删除评论 ");
 		mntmNewMenuItem_5.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		commentPopupMenu.add(mntmNewMenuItem_5);
+		mntmNewMenuItem_5.addActionListener(
+				new ActionListener(){
+					public void actionPerformed(ActionEvent event_delComments) {
+						if( list.getModel().getElementAt(commentsIndexIsSelected).uID.compareTo(uID) != 0 ){
+							UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+	                		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+	                		JOptionPane.showMessageDialog(null, "你不能删除别人的评论！", "删除评论失败", JOptionPane.ERROR_MESSAGE);
+						}
+						
+					}
+				});
 		
-		//实现一个鼠标右键点击弹出下拉菜单的监听器
-		class myJListListener extends MouseAdapter {
+		//对于评论 实现一个鼠标右键点击弹出下拉菜单的监听器
+		class commentsJListListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent e) {
 				//获得鼠标点击的列位置
 				int index = list.locationToIndex(e.getPoint());
+				MainWindow.commentsIndexIsSelected = index;
 				//如果在列表内 并且 按键为右键的话
 				if(index >= 0 && e.getButton() == 3)
 				{
@@ -255,8 +297,7 @@ public class MainWindow extends JFrame {
 				}       
 		    }
 		}
-		
-		list.addMouseListener(new myJListListener());
+		list.addMouseListener(new commentsJListListener());
 		
 		scrollPane_1.setViewportView(list);
 		
@@ -278,6 +319,45 @@ public class MainWindow extends JFrame {
 		Vector<MapNode> path = new Vector<MapNode>();
 		JList<MapNode> list_1 = new JList<MapNode>(path);
 		list_1.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		//重新绘制list_1中的cell
+		list_1.setCellRenderer( new MapCellRenderer() );
+		
+		JPopupMenu pathPopupMenu = new JPopupMenu();
+		list_1.add(pathPopupMenu);
+		
+		JMenuItem menuItem = new JMenuItem(" [暂时未加功能] ");
+		menuItem.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		pathPopupMenu.add(menuItem);
+		
+		//对于路径结果 实现一个鼠标右键点击弹出下拉菜单的监听器 并且显示对应node的评论
+		class pathJListListener extends MouseAdapter {
+			public void mouseClicked(MouseEvent e) {
+				//获得鼠标点击的列位置
+				int index = list_1.locationToIndex(e.getPoint());
+				//如果在列表内 显示对应node的评论
+				if(index >= 0){
+					try{
+						//用路径查询结果列表列表中选中的那一项对应的nodeID更新nodeIDIsSelected
+						MainWindow.nodeIDIsSelected = list_1.getModel().getElementAt(index).nodeID;
+						Comments.getComments(list,MainWindow.nodeIDIsSelected);
+					}
+					catch(Exception commentException){
+						UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+			    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+			    		JOptionPane.showMessageDialog(null, commentException.getMessage(), "获取评论失败", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				//如果在列表内 并且 按键为右键的话
+				if(index >= 0 && e.getButton() == 3)
+				{
+					//该项被选中 且 弹出下拉菜单
+					list_1.setSelectedIndex(index);
+					pathPopupMenu.show(list_1,e.getX(),e.getY());
+				}       
+		    }
+		}
+		list_1.addMouseListener(new pathJListListener());
+		
 		scrollPane_2.setViewportView(list_1);
 		
 		JLabel lblNewLabel = new JLabel("起点：");
@@ -301,10 +381,27 @@ public class MainWindow extends JFrame {
 		textField_1.setColumns(10);
 		
 		JButton btnNewButton = new JButton("查询");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
+		btnNewButton.addActionListener(
+				new ActionListener(){  
+                    public void actionPerformed(ActionEvent event_Query) { 
+                    	MainWindow.hasQueryed = true;
+                    	if(textField.getText().length() < 1 ||  textField_1.getText().length() < 1){
+                    		UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                    		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                    		JOptionPane.showMessageDialog(null, "起点或终点不能为空", "你tm在逗我？", JOptionPane.ERROR_MESSAGE);
+                    	}
+                    	else{
+                    		try{
+                    			MapNode.getPath(list_1,textField.getText(),textField_1.getText());
+                    		}
+                    		catch(Exception queryException) {
+                    			UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                        		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                        		JOptionPane.showMessageDialog(null, queryException.getMessage(), "查询失败", JOptionPane.ERROR_MESSAGE);
+                    		}
+                    	} 
+                    }  
+                });
 		btnNewButton.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		btnNewButton.setBounds(296, 40, 93, 23);
 		panel_2.add(btnNewButton);
@@ -324,79 +421,68 @@ public class MainWindow extends JFrame {
                 				+ "       李昊轩 121220044\n"
                 				, "关于我们", JOptionPane.INFORMATION_MESSAGE);
 					}
-				}
-				);
+				});
 		
 		
 	}
-}
 
-//实现ListCellRenderer接口 来达到绘制list中的cell的目的
-class CommentCellRenderer extends JTextArea implements ListCellRenderer{
-	private String text;
-	private String uid;
-	private boolean isSelected;
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus){
-       this.text = ((Comments)value).text;
-       this.uid = ((Comments)value).uID;
-       this.isSelected = isSelected;
-       setFont(list.getFont());
-       setLineWrap(true);
-       //加个边框
-       setBorder(BorderFactory.createLineBorder(Color.lightGray));
-       
-       //解决自动换行文本无法生长的问题 28为一行的汉字个数
-       int textWrapNumber = text.length() / 28;
-       for(int i=1;i<=textWrapNumber;i++)
-    	   text = text + "\n";
-       
-       setText("["+uid+"] 说：\n"+text);
-       //选中效果
-       if (isSelected) {
-            setBackground(list.getSelectionBackground());
-            setForeground(list.getSelectionForeground());
-        } else {
-            setBackground(list.getBackground());
-            setForeground(list.getForeground());
-        }
-       return this;
-    }
-    
-    public boolean getSelected(){
-    	return isSelected;
-    }
-}
-class MapCellRenderer extends JTextArea implements ListCellRenderer{
-	private String text;
-	private String uid;
-	private boolean isSelected;
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus){
-       this.text = ((Comments)value).text;
-       this.uid = ((Comments)value).uID;
-       this.isSelected = isSelected;
-       setFont(list.getFont());
-       setLineWrap(true);
-       //加个边框
-       setBorder(BorderFactory.createLineBorder(Color.lightGray));
-       
-       //解决自动换行文本无法生长的问题 28为一行的汉字个数
-       int textWrapNumber = text.length() / 28;
-       for(int i=1;i<=textWrapNumber;i++)
-    	   text = text + "\n";
-       
-       setText("["+uid+"] 说：\n"+text);
-       //选中效果
-       if (isSelected) {
-            setBackground(list.getSelectionBackground());
-            setForeground(list.getSelectionForeground());
-        } else {
-            setBackground(list.getBackground());
-            setForeground(list.getForeground());
-        }
-       return this;
-    }
-    
-    public boolean getSelected(){
-    	return isSelected;
-    }
+	//实现ListCellRenderer接口 来达到绘制list中的cell的目的
+	class CommentCellRenderer extends JTextArea implements ListCellRenderer{
+		private String text;
+		private String uid;
+		private boolean isSelected;
+	    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus){
+	       this.text = ((Comments)value).text;
+	       this.uid = ((Comments)value).uID;
+	       this.isSelected = isSelected;
+	       setFont(list.getFont());
+	       setLineWrap(true);
+	       //加个边框
+	       setBorder(BorderFactory.createLineBorder(Color.lightGray));
+	       setSize(327,5);//宽度固定 高度随意设置 只要别太小即可
+	       setText("["+this.uid+"] 说：\n"+this.text);
+	       //选中效果
+	       if (isSelected) {
+	            setBackground(list.getSelectionBackground());
+	            setForeground(list.getSelectionForeground());
+	        } else {
+	            setBackground(list.getBackground());
+	            setForeground(list.getForeground());
+	        }
+	       return this;
+	    }
+	    
+	    public boolean getSelected(){
+	    	return isSelected;
+	    }
+	}
+	class MapCellRenderer extends JTextArea implements ListCellRenderer{
+		private String nodeName;
+		private boolean isSelected;
+	    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus){
+	       this.nodeName = ((MapNode)value).nodeName;
+	       this.isSelected = isSelected;
+	       setFont(list.getFont());
+	       setLineWrap(true);
+	       //加个边框
+	       setBorder(BorderFactory.createLineBorder(Color.lightGray));
+	       setSize(327,5);//宽度固定 高度随意设置 只要别太小即可
+	       this.nodeName = this.nodeName + "\n";
+	       Integer no = new Integer(index+1);
+	       setText("\n      "+no.toString()+". "+nodeName);
+	       //选中效果
+	       if (isSelected) {
+	            setBackground(list.getSelectionBackground());
+	            setForeground(list.getSelectionForeground());
+	        } else {
+	            setBackground(list.getBackground());
+	            setForeground(list.getForeground());
+	        }
+	       return this;
+	    }
+	    
+	    public boolean getSelected(){
+	    	return isSelected;
+	    }
+	}
 }
