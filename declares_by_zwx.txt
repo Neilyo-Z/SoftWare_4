@@ -25,7 +25,7 @@ like_n表示赞数
 article表示评论正文，应在255字符之内
 
 更新：考虑到点赞必须标志某个用户，可能必须得添加一个table:likes
-
+Likes(l_id, user_id, c_id, likes_n)
 
 函数约定更新：
 getComments
@@ -34,3 +34,8 @@ getComments
 该数目为min(要求的评论数，边所有的评论数）
 接下来每个元素为一个评论信息，由Separater分割
 默认评论按时间降序排列
+格式：
+c_id,c_date,user_id,article,tag1,tag2,tag3
+以##分隔。
+clickComment
+要求给定参数c_id,u_id，即评论id和用户id
