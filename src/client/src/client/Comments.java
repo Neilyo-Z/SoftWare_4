@@ -14,32 +14,38 @@ class Comments {
 	}
 	
 	public static void getComments(JList<Comments> list, int nodeID) throws Exception  {
-		
-		 DefaultListModel<Comments> DLM = new DefaultListModel<Comments>();
-		if(nodeID==1){
-			DLM.addElement(new Comments("朱维希", 1, "这道太jb堵了！") );
-			DLM.addElement(new Comments("朱维希", 2, "前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈！"));
+		String str = "getComments##"+MainWindow.uID+"##"+MainWindow.pw+"##"+String.valueOf(nodeID);
+		String echo = client.sendToServer(str);
+		//处理回答
+	    if( echo.compareTo("false") == 0 ){
+			throw new Exception ("获取评论失败！");
 		}
-		else if(nodeID==2){
-			DLM.addElement(new Comments("猪未洗", 3, "前面俩傻逼撞了，\n哈\n哈\n哈\n哈\n哈\n哈\n哈\n哈\n哈\n哈\n哈\n哈！"));
-			DLM.addElement(new Comments("猪未洗", 4, "前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！"));
-			DLM.addElement(new Comments("猪未洗", 5, "前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！"));
-			DLM.addElement(new Comments("猪未洗", 6, "前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！"));
-			DLM.addElement(new Comments("猪未洗", 7, "前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！"));
-			DLM.addElement(new Comments("猪未洗", 8, "前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！"));
-			DLM.addElement(new Comments("猪未洗", 9, "前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！"));
-			DLM.addElement(new Comments("猪未洗", 10, "前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！"));
-			DLM.addElement(new Comments("猪未洗", 11, "前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！"));
-			DLM.addElement(new Comments("猪未洗", 12, "前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！"));
-			DLM.addElement(new Comments("猪未洗", 13, "前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！"));
-			DLM.addElement(new Comments("猪未洗", 14, "前面俩傻逼撞了，哈哈哈哈哈哈哈哈哈哈哈哈！"));
+	    DefaultListModel<Comments> DLM = new DefaultListModel<Comments>();
+	    if( echo.compareTo("null") != 0 ){
+			String[] commentList = echo.split("##");
+			if(commentList.length %3 !=0){
+				throw new Exception ("获取的评论格式不正确！\n请刷新后重试");
+			}
+			for(int i=0 ; i<commentList.length ;i+=3){
+				DLM.addElement(new Comments(commentList[i+1], Integer.parseInt(commentList[i]), commentList[i+2]) );
+			}
 		}
-		list.setModel(DLM);
+	    list.setModel(DLM);
 	}
 	public static void sendComments(int nodeID,String text) throws Exception  {
-		System.out.printf("sendComments( %d , %s )\n",nodeID,text);
+		String str = "addComment##"+MainWindow.uID+"##"+MainWindow.pw+"##"+String.valueOf(nodeID)+"##"+text;
+		String echo = client.sendToServer(str);
+		//处理回答
+	    if( echo.compareTo("false") == 0 ){
+			throw new Exception ("发表评论失败！");
+		}
 	}
-	public static void delComments(JList<Comments> list, int delNumber) throws Exception  {
-		
+	public static void delComments(int delNumber) throws Exception  {
+		String str = "delComment##"+MainWindow.uID+"##"+MainWindow.pw+"##"+String.valueOf(delNumber);
+		String echo = client.sendToServer(str);
+		//处理回答
+	    if( echo.compareTo("false") == 0 ){
+			throw new Exception ("删除评论失败！\n可能评论不存在");
+		}
 	}
 }

@@ -25,7 +25,6 @@ import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 
 import java.awt.Font;
-import java.util.Vector;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -194,9 +193,9 @@ public class MainWindow extends JFrame {
 		contentPane.add(panel_1);
 		panel_1.setLayout(null);
 		
-		JButton button = new JButton("发表");
+		JButton button = new JButton("发表评论");
 		button.setFont(new Font("微软雅黑", Font.PLAIN, 10));
-		button.setBounds(161, 501, 61, 20);
+		button.setBounds(266, 501, 89, 20);
 		panel_1.add(button);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -234,11 +233,14 @@ public class MainWindow extends JFrame {
                     	else{
                     		try{
                     			Comments.sendComments(nodeIDIsSelected, text);
+                    			UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                        		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                        		JOptionPane.showMessageDialog(null, "发表评论成功！", "Good job！", JOptionPane.INFORMATION_MESSAGE);
                     		}
                     		catch(Exception sendCommentsException) {
                     			UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
                         		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
-                        		JOptionPane.showMessageDialog(null, sendCommentsException.getMessage(), "发表评论失败", JOptionPane.ERROR_MESSAGE);
+                        		JOptionPane.showMessageDialog(null, sendCommentsException.getMessage(), "发表评论失败！", JOptionPane.ERROR_MESSAGE);
                     		}
                     	} 
                     }  
@@ -248,8 +250,7 @@ public class MainWindow extends JFrame {
 		scrollPane_1.setBounds(10, 24, 345, 355);
 		panel_1.add(scrollPane_1);
 		
-		Vector<Comments> comment = new Vector<Comments>();
-		JList<Comments> list = new JList<Comments>(comment);
+		JList<Comments> list = new JList<Comments>();
 		list.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		//重新绘制list中的cell
 		list.setCellRenderer( new CommentCellRenderer() );
@@ -275,6 +276,19 @@ public class MainWindow extends JFrame {
 							UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
 	                		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
 	                		JOptionPane.showMessageDialog(null, "你不能删除别人的评论！", "删除评论失败", JOptionPane.ERROR_MESSAGE);
+						}
+						else{
+							try{
+                    			Comments.delComments(list.getModel().getElementAt(commentsIndexIsSelected).cID);
+                    			UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                        		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                        		JOptionPane.showMessageDialog(null, "删除评论成功！", "Good job！", JOptionPane.INFORMATION_MESSAGE);
+                    		}
+                    		catch(Exception sendCommentsException) {
+                    			UIManager.put("OptionPane.messageFont",new Font("微软雅黑", Font.PLAIN, 12));
+                        		UIManager.put("OptionPane.buttonFont",new Font("微软雅黑", Font.PLAIN, 12));
+                        		JOptionPane.showMessageDialog(null, sendCommentsException.getMessage(), "删除评论失败！", JOptionPane.ERROR_MESSAGE);
+                    		}
 						}
 						
 					}
@@ -314,8 +328,7 @@ public class MainWindow extends JFrame {
 		scrollPane_2.setBounds(0, 0, 399, 469);
 		panel.add(scrollPane_2);
 		
-		Vector<MapNode> path = new Vector<MapNode>();
-		JList<MapNode> list_1 = new JList<MapNode>(path);
+		JList<MapNode> list_1 = new JList<MapNode>();
 		list_1.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		//重新绘制list_1中的cell
 		list_1.setCellRenderer( new MapCellRenderer() );

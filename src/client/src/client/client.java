@@ -35,7 +35,7 @@ class client{
 		client.writer.write(str);
 		client.writer.flush();
 		//接收一个服务器回答
-		char chars[] = new char[64];  
+		char chars[] = new char[2000];  
 	    int len;  
 	    StringBuilder sb = new StringBuilder();  
 	    len=client.reader.read(chars);  

@@ -41,9 +41,18 @@ public class EditProfileDialog extends JDialog {
 			throw new Exception ("获得资料失败！");
 		}
 	    String[] info = echo.split("##");
-		this.nickName = info[0];
-		this.sex = info[1];
-		this.mailBox = info[2];
+	    if(info[0].compareTo("\0") == 0)
+	    	this.nickName = "";
+	    else
+	    	this.nickName = info[0];
+	    if(info[1].compareTo("\0") == 0)
+	    	this.sex = "";
+	    else
+	    	this.sex = info[1];
+	    if(info[2].compareTo("\0") == 0)
+	    	this.mailBox = "";
+	    else
+	    	this.mailBox = info[2];
 		
 	}
 	private void SendProfile() throws Exception {
