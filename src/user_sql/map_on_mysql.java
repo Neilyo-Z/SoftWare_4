@@ -23,6 +23,8 @@ public class map_on_mysql {
 	static String url="jdbc:mysql://localhost:3306/software_4_db";
 	static String username="root";
 	static Statement statement;
+	static String status_off="offline";
+	static String status_on="online";
 	static SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	//create table Nodes:n_id, n_name, n_x, n_y
 	//create table Edges:e_id, e_name, n_id_1, n_id_2, distance, tag1, tag2, tag3
@@ -48,20 +50,22 @@ public class map_on_mysql {
 					"create table if not exists "
 					+ "Edges ("
 					+ "e_id INT UNSIGNED not null primary key AUTO_INCREMENT,"
-					+ "e_name varchar(255) not null," 
+					+ "e_name varchar(255) not null,"
 					+ "n_id_1 INT UNSIGNED not null," 
 					+ "n_id_2 INT UNSIGNED not null," 
 					+ "distance double UNSIGNED not null,"
 					+ "tag1 INT UNSIGNED not null,"
 					+ "tag2 INT UNSIGNED not null,"
 					+ "tag3 INT UNSIGNED not null"
+					+ "foreign key(n_id_1) references Nodes(n_id)," 
+					+ "foreign key(n_id_2) references Nodes(n_id)," 
 					+ ");";
 			//create table Comments
 			String create_table_Comments = 
 					"create table if not exists "
 					+ "Comments ("
 					+ "c_id INT UNSIGNED not null primary key AUTO_INCREMENT,"
-					+ "c_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ," 
+					+ "c_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,"
 					+ "e_id INT UNSIGNED not null," 
 					+ "user_id INT UNSIGNED not null," 
 					+ "like_n INT UNSIGNED not null,"
@@ -70,10 +74,27 @@ public class map_on_mysql {
 					+ "tag1 INT UNSIGNED not null,"
 					+ "tag2 INT UNSIGNED not null,"
 					+ "tag3 INT UNSIGNED not null"
+					+ "foreign key(e_id) references Edges(e_id),"
+					+ "foreign key(user_id) references user_info(user_id)," 
 					+ ");";
+			//create table Likes (l_id,user_id,c_id,likes_n)
+			String create_table_Likes =
+					"create table if not exists "
+					+ "Likes ("
+					+ "l_id INT UNSIGNED not null primary key AUTO_INCREMENT, "
+					+ "user_id INT UNSIGNED not null,"
+					+ "c_id INT UNSIGNED not null,"
+					+ "likes_n INT UNSIGNED not null"
+					+ "foreign key(user_id) references user_info(user_id),"
+					+ "foreign key(c_id) references Comments(c_id) "
+					//保证评论删除后相应的点赞记录也被删除
+					+ "on delete cascade on update cascade,"
+					+ ");";
+			
 			statement.executeUpdate(create_table_Nodes);
 			statement.executeUpdate(create_table_Edges);
 			statement.executeUpdate(create_table_Comments);
+			statement.executeUpdate(create_table_Likes);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -254,11 +275,12 @@ public class map_on_mysql {
 			if(rowCount > 0) {
 				while (rs.next()) {
 					String CommentInfo = 
-							String.valueOf(rs.getInt("c_id"))
-							+ dateformat.format(rs.getTimestamp("c_date"))
-							+ rs.getString("article")
-							+ String.valueOf(rs.getInt("tag1"))
-							+ String.valueOf(rs.getInt("tag2"))
+							String.valueOf(rs.getInt("c_id")) + Separater
+							+ dateformat.format(rs.getTimestamp("c_date")) + Separater
+							+ rs.getString("user_id") + Separater
+							+ rs.getString("article") + Separater
+							+ String.valueOf(rs.getInt("tag1")) + Separater
+							+ String.valueOf(rs.getInt("tag2")) + Separater
 							+ String.valueOf(rs.getInt("tag3"));
 					results.add(CommentInfo);
 				}
@@ -308,28 +330,107 @@ public class map_on_mysql {
 			//INSERT
 			String insert_query =
 					"INSERT INTO Comments(e_id,user_id,password,like_n,jubao_n,"
-					+ "article,tag1,tag2,tag3) "
-					+ "VALUES ("
-					+ String.valueOf(e_id) + ",'"
-					+ user_id + "','"
-					+ password + "',"
-					+ "0" + ","
-					+ "0" + ",'"
-					+ article + "',"
-					+ String.valueOf(tag1) + ","
-					+ String.valueOf(tag2) + ","
-					+ String.valueOf(tag3)
-					+ ");";
+							+ "article,tag1,tag2,tag3) "
+							+ "VALUES ("
+							+ String.valueOf(e_id) + ",'"
+							+ user_id + "','"
+							+ password + "',"
+							+ "0" + ","
+							+ "0" + ",'"
+							+ article + "',"
+							+ String.valueOf(tag1) + ","
+							+ String.valueOf(tag2) + ","
+							+ String.valueOf(tag3)
+							+ ");";
 			statement.executeUpdate(insert_query);
 			updateTags(e_id);
 			return true;
 		}
 	}
 	
-	//clickComment 点赞或取消赞
-	public static boolean clickComment(int c_id) throws SQLException {
+	//clickComment 点赞或取消赞 
+	public static boolean clickComment(int c_id,String u_id) throws SQLException {
 		synchronized (statement) {
-			
+			//SELECT TABLE Likes
+			String query = 
+					"SELECT likes_n FROM Likes WHERE "
+							+ "c_id = " + String.valueOf(c_id) + " AND "
+							+ "user_id = '" + u_id
+							+ "';";
+			ResultSet rs = 
+					statement.executeQuery(query);
+			if(rs.next()) {
+				int likes_n = 
+						rs.getInt("likes_n");
+				//如果是赞则取消，如果没赞过则加赞
+				likes_n = likes_n ^ 1;
+				//UPDATE table Likes
+				String update_query = 
+						"UPDATE Likes SET"
+								+ "likes_n = " + String.valueOf(likes_n)
+							+ "WHERE"
+							+ "c_id = " + String.valueOf(c_id) + " AND "
+							+ "user_id = '" + u_id
+							+ "';";
+				statement.executeUpdate(update_query);
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 	}
+	
+	//delComment 用户撤销该赞
+	public static boolean delComment(String user_id, String password, 
+			int c_id) throws SQLException {
+		synchronized (statement) {
+			//Judge the authority
+			String query_1 = 
+					"SELECT * FROM user_info WHERE "
+							+ "user_id = '" + user_id + " AND '"
+							+ "password = '" + password + " AND '"
+							+ "status = '" + status_off
+							+ "';";
+			ResultSet rs_1 = 
+					statement.executeQuery(query_1);
+			if(rs_1.next()) {
+			//SELECT TABLE Comments
+				String query_2 = 
+						"SELECT * FROM Comments WHERE "
+								+ "c_id = " + String.valueOf(c_id) + " AND "
+								+ "user_id = '" + user_id + " AND "
+								+ "password = "
+								+ "';";
+				ResultSet rs_2 = 
+						statement.executeQuery(query_2);
+				if(rs_2.next()) {
+					int likes_n = 
+							rs_2.getInt("likes_n");
+					//如果是赞则取消，如果没赞过则加赞
+					likes_n = likes_n ^ 1;
+					//UPDATE table Likes
+					String update_query = 
+							"UPDATE Likes SET"
+									+ "likes_n = " + String.valueOf(likes_n)
+									+ "WHERE"
+									+ "c_id = " + String.valueOf(c_id) + " AND "
+									+ "user_id = '" + user_id
+									+ "';";
+					statement.executeUpdate(update_query);
+					return true;
+				}
+				//不存在该评论
+				else {
+					return false;
+				}
+			}
+			//该用户非法
+			else {
+				return false;
+			}
+		}
+	}
+	
+	//
 }
